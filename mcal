@@ -1,0 +1,115 @@
+#!/bin/bash
+
+# Codigos de error para exit
+E_MASTRES=24 
+E_NOOPS=25
+E_NOOP=23
+
+# Otras variables
+MISCRIPT=`basename $0` # Nombre del script
+args=$@ # Argumentos que recibe el script
+cargs=$# # Cantidad de argumentos que recibe el script
+meses=(ene feb mar abr may jun jul ago sep oct nov dic jan feb mar apr may jun jul aug sep oct nov dec none)
+aniolimite=9999 # $(date +%Y)
+anual=0 # El calendario es anual o mensual
+
+# Muestra la ayuda ante la opcion -help
+function ayuda () {
+	echo "Eligió Ayuda"
+}
+
+#Revisa si el parametro es un entero.
+function esParametroEntero () {
+    #echo "Valor parametro #1 is $1"    
+    if echo "$1" | egrep -q '^\-?[0-9]+$'; then 
+       echo 'S'
+    else 
+       echo 'N'
+    fi
+}
+
+# Busca el mes en la lista
+function nummes() {
+	local j=1
+	local num=0
+	for i in "${meses[@]}" # Busca el mes en la lista
+	do
+	    local inicial=${1:0:3} # Deja solo los 3 primeros caracteres del mes
+	    inicial="${inicial,,}" # Convierte el mes a minusculas
+	    if [ $inicial == $i ] 
+	    then
+	       let 'num=j' #Carga el numero de mes
+	    fi
+	    let "j+=1"
+	done
+	if [ $num -gt 12 ]
+	then
+		let "num-=12"
+	fi
+	echo $num # Devuelve 0 si no es un mes
+} # Dado el nombre del mes devuelve el numero de mes
+
+# para borrar
+echo $args
+echo $cargs
+echo $1
+nummes $1
+# echo $mes1
+
+case $# in # Comprobamos el numero de argumentos
+0) set fecha=$(date);
+   mes=$2; anio=$6;;
+1) valida=$(esParametroEntero $1) # S si es un entero entre 0 y 9
+   if [ $valida = 'S' ]
+   then
+       if [ $1 -ge 1 -a $1 -le 12 ]
+       then
+		      mes=$1
+		      anio=$(date +%Y)
+		      anual=0
+       elif [ $1 -ge 13 -a $1 -le $aniolimite ]
+       then
+          mes=$(date +%b)
+          anio=$1
+          anual=1
+        else
+          echo "$1: opcion invalida" >&2; exit ${E_NOOP}
+       fi 
+   elif [ $1 != "-help" ]
+   then
+        mes=$(nummes $1)    
+        if [ $mes -eq 0 ] # Verifica que es una cadena pero no es mes ni help
+        then
+           echo "$1: opcion invalida" >&2; exit ${E_NOOP}
+           #anual=1
+        else
+           anio=$(date +%Y)
+		       anual=0
+	      fi
+   elif [ $1 = "-help" ]
+   then
+	    ayuda
+   else
+        echo "$1: opcion invalida" >&2; exit ${E_NOOP}
+   fi;;
+2) if [ $1 -ge 1 -a $1 -le 12 -a $2 -ge 1 -a $2 -le $aniolimite ]
+   then
+		mes=$1
+		anio=$2
+		anual=0
+   else
+        echo "$1 o $2: opcion/es invalida/s" >&2; exit ${E_NOOPS}
+   fi;;
+*) # Mas tres o mas argumentos        
+   echo "Uso: ${MISCRIPT} [mes] [anio], donde mes es numerico o alfabetico, y 1<anio<9999" >&2; exit ${E_MASTRES};;
+esac
+
+
+if [ $anual -eq 1 ]
+then
+    cal $anio
+elif [ $1 != "-help" ]
+then
+    cal $mes $anio
+fi
+exit $? # Devuelve el valor de retorno del ultimo comando ejecutado

@@ -1,0 +1,60 @@
+#!/bin/bash
+
+if [ $cargs -eq 0 ]
+then
+     set fecha=$(date) # Almacena en todas sus posiciones por ej. jue may 24 12:14:53 -03 2018
+elif [ esParametroEntero $1 -eq 1 -a $cargs -eq 1 ]
+then
+     eho "Es 1 entero" # Cambia el mes de letras a numeros
+     mes=$1
+elif [ esParametroEntero $mes -eq 1 -a $cargs -eq 2 -a esParametroEntero $2 -eq 1 ]
+then
+     echo "Son 1 y dos enteros"
+fi
+
+case $cargs in
+0) set fecha=$(date);; # Almacena en todas sus posiciones por ej. jue may 24 12:14:53 -03 2018
+1) mes=$1;;
+   #epe=$(esParametroEntero mes);;
+   if [ esParametroEntero mes -eq 1 ]
+   then
+       echo "Es 1 entero";; # Cambia el mes de letras a numeros
+   elif [ $mes = "-help" ]
+   then
+      ayuda;;
+   elif
+   then
+      echo "Veo si es mes";;
+   fi;;
+2) mes=$1;; anio=$2;;
+   if [ esParametroEntero $mes -eq 1 -a esParametroEntero $anio -eq 1 ]
+   then
+      echo "Son 1 y dos enteros";;
+   fi;;
+esac
+
+
+function escadena() {
+	local j=0
+	for i in "${mescadena[@]}" # Busca el mes en la lista
+	do
+	    local inicial=${1:0:3} # Deja solo los 3 primeros caracteres del mes
+	    inicial="${inicial,,}" # Convierte el mes a minusculas
+	    if [ $inicial == $i ] 
+	    then
+	       echo 'esunacadena'
+	    fi
+	    let "j+=1"
+	done
+} # comprueba si es una cadena
+
+#Revisa si el parametro es un entero.
+esParametroEntero () {
+    #echo "Valor parametro #1 is $1"    
+    if echo "$1" | egrep -q '^\-?[0-9]+$'; then 
+       esParametroEntero=1
+    else 
+       esParametroEntero=0
+    fi
+    return $esParametroEntero
+}
