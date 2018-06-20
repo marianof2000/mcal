@@ -1,0 +1,48 @@
+Eligió Ayuda
+
+El uso del comando mcal es el siguiente:
+en el caso de no introducir parámetros nos devuelve el calendario del año y mes en curso
+para el caso de un parámetro solo
+si es ńumérico reconoce para los números entre 1 y 12 como el mes en curso del año actual
+si es numérico pero es mayor o igual a 13 devuel el calendario del año vigente
+si es texto, como por ejemplo el mes en castellano o inglés, devuelve el mes solicitado del año actual
+por último para el caso de dos parámetros en el caso de ser válidos reconocerá al primero como el mes y el segundo como el año solicitado
+------------------
+Ayuda
+para invocar a la ayuda se debe poner como parámetro -help, de la siguiente manera
+mcal -help
+
+----adaptación del comando cal por Mariano Francisco----
+
+ejemplos
+
+mcal
+    Proporciona el calendario del mes actual.
+     
+mcal 1
+    Proporciona el calendario de enero del año actual.
+     
+mcal ene 
+    Proporciona el calendario de enero del año actual.
+     
+mcal jan 
+    Proporciona el calendario de enero del año actual.
+     
+mcal 1 1
+    Proporciona el calendario de enero del año 1.
+     
+mcal 2018
+    Proporciona el calendario del año 2018.
+     
+mcal 2018 > temp
+    Escribe en el fichero de nombre temp el calendario del año 2018.
+     
+mcal -help
+    Proporciona en consola el texto de ayuda.
+     
+mcal -help >temp2
+    Proporciona en consola el texto de ayuda.
+     
+mcal 13
+    Proporciona el calendario del año 13.
+

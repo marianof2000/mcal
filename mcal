@@ -16,6 +16,53 @@ anual=0 # El calendario es anual o mensual
 # Muestra la ayuda ante la opcion -help
 function ayuda () {
 	echo "Eligió Ayuda"
+	echo
+	echo "El uso del comando mcal es el siguiente:
+en el caso de no introducir parámetros nos devuelve el calendario del año y mes en curso
+para el caso de un parámetro solo
+si es ńumérico reconoce para los números entre 1 y 12 como el mes en curso del año actual
+si es numérico pero es mayor o igual a 13 devuel el calendario del año vigente
+si es texto, como por ejemplo el mes en castellano o inglés, devuelve el mes solicitado del año actual
+por último para el caso de dos parámetros en el caso de ser válidos reconocerá al primero como el mes y el segundo como el año solicitado
+------------------
+Ayuda
+para invocar a la ayuda se debe poner como parámetro -help, de la siguiente manera
+mcal -help
+
+----adaptación del comando cal por Mariano Francisco----
+
+ejemplos
+
+mcal
+    Proporciona el calendario del mes actual.
+     
+mcal 1
+    Proporciona el calendario de enero del año actual.
+     
+mcal ene 
+    Proporciona el calendario de enero del año actual.
+     
+mcal jan 
+    Proporciona el calendario de enero del año actual.
+     
+mcal 1 1
+    Proporciona el calendario de enero del año 1.
+     
+mcal 2018
+    Proporciona el calendario del año 2018.
+     
+mcal 2018 > temp
+    Escribe en el fichero de nombre temp el calendario del año 2018.
+     
+mcal -help
+    Proporciona en consola el texto de ayuda.
+     
+mcal -help >temp2
+    Proporciona en consola el texto de ayuda.
+     
+mcal 13
+    Proporciona el calendario del año 13."
+    echo
 }
 
 #Revisa si el parametro es un entero.
@@ -50,66 +97,106 @@ function nummes() {
 } # Dado el nombre del mes devuelve el numero de mes
 
 # para borrar
-echo $args
-echo $cargs
-echo $1
-nummes $1
+#echo $args
+#echo $cargs
+#echo $1
+#nummes $1
 # echo $mes1
 
 case $# in # Comprobamos el numero de argumentos
 0) set fecha=$(date);
-   mes=$2; anio=$6;;
+   mes=$2; anio=$6;; # sin párametros toma el dia y el anio actual
 1) valida=$(esParametroEntero $1) # S si es un entero entre 0 y 9
    if [ $valida = 'S' ]
    then
-       if [ $1 -ge 1 -a $1 -le 12 ]
+       if [ $1 -ge 1 -a $1 -le 12 ] # si está entre 1 y 12 se considera mes
        then
 		      mes=$1
 		      anio=$(date +%Y)
 		      anual=0
-       elif [ $1 -ge 13 -a $1 -le $aniolimite ]
+       elif [ $1 -ge 13 -a $1 -le $aniolimite ] # si es mayor a 13 es un anio
        then
           mes=$(date +%b)
           anio=$1
-          anual=1
+          anual=1 # muestra calendario anual
         else
-          echo "$1: opcion invalida" >&2; exit ${E_NOOP}
+          echo "$1: opcion invalida - consulte mcal -help" >&2; exit ${E_NOOP} #de lo contrario no es valido
        fi 
    elif [ $1 != "-help" ]
    then
         mes=$(nummes $1)    
         if [ $mes -eq 0 ] # Verifica que es una cadena pero no es mes ni help
         then
-           echo "$1: opcion invalida" >&2; exit ${E_NOOP}
+           echo "$1: opcion invalida - consulte mcal -help" >&2; exit ${E_NOOP}
            #anual=1
         else
            anio=$(date +%Y)
-		       anual=0
-	      fi
+		   anual=0 # muestra calendario mensual
+	    fi
    elif [ $1 = "-help" ]
    then
-	    ayuda
+	    ayuda #invoca a la ayuda
    else
-        echo "$1: opcion invalida" >&2; exit ${E_NOOP}
+        echo "$1: opcion invalida - consulte mcal -help" >&2; exit ${E_NOOP}
    fi;;
-2) if [ $1 -ge 1 -a $1 -le 12 -a $2 -ge 1 -a $2 -le $aniolimite ]
+2) valida=$(esParametroEntero $1) # S si es un entero entre 0 y 9
+   if [ $valida = 'S' ]
    then
-		mes=$1
-		anio=$2
-		anual=0
-   else
-        echo "$1 o $2: opcion/es invalida/s" >&2; exit ${E_NOOPS}
-   fi;;
+       if [ $1 -ge 1 -a $1 -le 12 ] # si está entre 1 y 12 se considera mes
+       then
+		    valida=$(esParametroEntero $2) # S si el anio es un entero entre 0 y 9
+		    if [ $valida = 'S' ]
+		    then  
+		    	if [ $2 -ge 1 -a $2 -le $aniolimite ] # si está entre 1 y 12 se considera mes
+				then
+				      mes=$1
+				      anio=$2
+				      anual=0 # muestra calendario mensual
+				else
+					echo "$2: año inválido - consulte mcal -help" >&2; exit ${E_NOOP} #de lo contrario no es valido
+				fi
+			else
+			    echo "$2: opcion invalida - consulte mcal -help" >&2; exit ${E_NOOP} #de lo contrario no es valido el año no es entero
+		    fi
+		else	
+			echo "$1: mes inválido - consulte mcal -help" >&2; exit ${E_NOOP} #de lo contrario no es valido
+		fi
+	else	
+		mes=$(nummes $1)    
+        if [ $mes -eq 0 ] # Verifica que es una cadena pero no es mes ni help
+        then
+           echo "$1: mes inválido - consulte mcal -help" >&2; exit ${E_NOOP}
+           #anual=1
+        else
+           valida=$(esParametroEntero $2) # S si el anio es un entero entre 0 y 9
+		    if [ $valida = 'S' ]
+		    then  
+		    	if [ $2 -ge 1 -a $2 -le $aniolimite ] # si está entre 1 y 12 se considera mes
+				then
+				      mes=$1
+				      anio=$2
+				      anual=0 # muestra calendario mensual
+				else
+					echo "$2: año inválido - consulte mcal -help" >&2; exit ${E_NOOP} #de lo contrario no es valido
+				fi
+			else
+			    echo "$2: el año debe ser un número - consulte mcal -help" >&2; exit ${E_NOOP} #de lo contrario no es valido el año no es entero
+		    fi
+	    fi	
+	fi;;
+	    
 *) # Mas tres o mas argumentos        
-   echo "Uso: ${MISCRIPT} [mes] [anio], donde mes es numerico o alfabetico, y 1<anio<9999" >&2; exit ${E_MASTRES};;
+   echo "Uso: ${MISCRIPT} [mes] [anio], donde mes es numerico o alfabetico, y 1<año<9999 - consulte mcal -help" >&2; exit ${E_MASTRES};;
 esac
 
 
 if [ $anual -eq 1 ]
 then
+	echo
     cal $anio
 elif [ $1 != "-help" ]
 then
+    echo
     cal $mes $anio
 fi
 exit $? # Devuelve el valor de retorno del ultimo comando ejecutado
